@@ -1,35 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useMemo } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import Header from './pages/header/header';
+import './App.css';
+import Inicio from './pages/inicio/page';
+import Contacto from './pages/contacto/page';
+import Footer from './pages/footer/footer';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [themeMode, setThemeMode] = useState('light');
+
+  // Crear tema basado en el estado de modo
+  const theme = useMemo(() =>
+    createTheme({
+      palette: {
+        mode: themeMode,
+      },
+    }),
+  [themeMode]);
+
+  // Función para alternar entre claro y oscuro
+  const toggleTheme = () => {
+    setThemeMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+  };
 
   return (
-    <>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        {/* Pasamos la función toggleTheme y el tema actual al Header */}
+        <Header page={'inicio'} toggleTheme={toggleTheme} currentTheme={themeMode} />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Inicio />} />
+          {/* Puedes agregar más rutas aquí si lo deseas */}
+        </Routes>
+      </Router>
+      <div>
+        <Footer />
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </ThemeProvider>
+  );
 }
 
-export default App
+export default App;
